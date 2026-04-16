@@ -1,128 +1,103 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html>
 <head>
-    <title>Terminal Access - Bypass</title>
+    <title>CRITICAL_ACCESS_REQUIRED</title>
     <style>
         body {
             background-color: #000;
             color: #0d0;
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
-            /* Убрали overflow: hidden, чтобы можно было листать */
             margin: 0;
+            overflow-x: hidden;
         }
 
         #terminal {
             white-space: pre-wrap;
-            line-height: 1.2;
-            font-size: 14px;
+            line-height: 1.1;
+            font-size: 13px;
+            text-shadow: 0 0 2px #0d0;
         }
 
-        #cursor {
-            display: inline-block;
-            width: 8px;
-            height: 15px;
-            background: #0d0;
-            animation: blink 0.8s infinite;
-            vertical-align: middle;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
-
-        .error { color: #f00; font-weight: bold; }
-        .success { color: #fff; font-weight: bold; text-shadow: 0 0 8px #fff; font-size: 18px; }
-        .header { color: #555; } /* Серый для второстепенных логов */
+        .success { color: #fff; font-weight: bold; font-size: 20px; text-shadow: 0 0 10px #fff; background: #050; }
+        .warning { color: #ff0; font-style: italic; }
+        .critical { color: #f00; font-weight: bold; animation: pulse 0.5s infinite; }
         
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
         button {
             background: #000;
-            border: 2px solid #0d0;
-            color: #0d0;
-            padding: 15px 30px;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 20px 40px;
             font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
+            font-size: 18px;
             cursor: pointer;
             display: none;
-            margin: 40px auto;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 10px #0d0;
+            margin: 50px auto;
+            display: none;
+            box-shadow: 0 0 20px #fff;
         }
-        button:hover { background: #0d0; color: #000; }
+        button:hover { background: #fff; color: #000; }
     </style>
 </head>
 <body>
 
 <div id="terminal"></div>
-<div id="cursor"></div>
-<center><button id="actionBtn" onclick="window.location.href='ТВОЯ_ССЫЛКА_ТУТ'">ОТКРЫТЬ РАСШИФРОВАННЫЕ ДАННЫЕ</button></center>
+<center><button id="actionBtn" onclick="window.location.href='ТВОЯ_ССЫЛКА_ТУТ'">[ ПОЛУЧИТЬ ДОСТУП К АРХИВУ ]</button></center>
 
 <script>
     const terminal = document.getElementById('terminal');
     const btn = document.getElementById('actionBtn');
-    const cursor = document.getElementById('cursor');
 
-    // Базовые фразы
-    const startLogs = [
-        "> BOOTING SYSTEM...",
-        "> LOADING EXPLOIT: CASCADE_v4.2.0",
-        "> CONNECTING TO PORT 8080...",
-        "> REMOTE HOST: [REDACTED]",
-        "> BYPASSING FIREWALL..."
-    ];
-
-    const endLogs = [
-        "",
-        "> [OK] FIREWALL BREACHED",
-        "> [OK] ENCRYPTION KEYS CAPTURED",
-        "> [SYSTEM] ACCESS GRANTED.",
-        "> DECRYPTING FILES: ██████████████ 100%",
-        "> DONE."
-    ];
-
-    // Функция для генерации "мусорных" данных (каскада)
-    function generateTrash() {
-        let trash = [];
-        for(let i = 0; i < 150; i++) { // 150 строк кода
-            let hex = Math.random().toString(16).toUpperCase().substring(2, 10);
-            let mem = "0x" + Math.random().toString(16).toUpperCase().substring(2, 6);
-            trash.push(`${mem} | DATA_STREAM_${hex} | ${Math.random() > 0.5 ? 'SYNC' : 'BUSY'}`);
-        }
-        return trash;
+    function addLine(text, type = '') {
+        const p = document.createElement('div');
+        if (type) p.className = type;
+        p.textContent = text;
+        terminal.appendChild(p);
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
-    const fullLog = [...startLogs, ...generateTrash(), ...endLogs];
-    let lineIndex = 0;
-
-    function typeLine() {
-        if (lineIndex < fullLog.length) {
-            let p = document.createElement('div');
-            let currentLine = fullLog[lineIndex];
-
-            // Стилизация
-            if (currentLine.includes("GRANTED")) p.className = "success";
-            else if (currentLine.includes("FIREWALL")) p.className = "error";
-            else if (currentLine.includes("|")) p.className = "header";
-
-            p.textContent = currentLine;
-            terminal.appendChild(p);
-            lineIndex++;
+    async function startHacking() {
+        // Начало
+        addLine("> ИНИЦИАЛИЗАЦИЯ ВЗЛОМА...");
+        await new Promise(r => setTimeout(r, 1000));
+        
+        // Огромный каскад (300 строк)
+        for(let i = 0; i < 300; i++) {
+            let hex1 = Math.random().toString(16).toUpperCase().substring(2, 10);
+            let hex2 = Math.random().toString(16).toUpperCase().substring(2, 6);
+            let status = Math.random() > 0.9 ? "[КРИТИЧЕСКАЯ ОШИБКА]" : "[OK]";
             
-            // Авто-скролл вниз
-            window.scrollTo(0, document.body.scrollHeight);
+            addLine(`СЕКТОР_${hex2} | ПОТОК:${hex1} | СТАТУС: ${status} | MEM_LOAD: ${Math.floor(Math.random()*100)}%`, 
+                    status === "[КРИТИЧЕСКАЯ ОШИБКА]" ? 'warning' : '');
             
-            // Скорость: "мусор" летит очень быстро, важные строки медленнее
-            let speed = (lineIndex > 5 && lineIndex < 155) ? 10 : 300;
-            setTimeout(typeLine, speed);
-        } else {
-            btn.style.display = "block";
-            cursor.style.display = "none";
-            window.scrollTo(0, document.body.scrollHeight);
+            // Очень высокая скорость для каскада
+            await new Promise(r => setTimeout(r, 15)); 
         }
+
+        // Финальные команды
+        addLine("\n> ОБХОД ЗАЩИТЫ ЗАВЕРШЕН...", 'success');
+        await new Promise(r => setTimeout(r, 800));
+        addLine("> ИЗВЛЕЧЕНИЕ ПАРОЛЕЙ...", 'warning');
+        await new Promise(r => setTimeout(r, 1200));
+        addLine("> ОШИБКА СИСТЕМЫ: ОБНАРУЖЕН СЛЕД АДМИНИСТРАТОРА!", 'critical');
+        await new Promise(r => setTimeout(r, 1000));
+        addLine("> ПЕРЕНАПРАВЛЕНИЕ ТРАФИКА... УСПЕШНО.");
+        await new Promise(r => setTimeout(r, 500));
+        addLine("\n=== ДОСТУП РАЗРЕШЕН ===", 'success');
+        
+        // Показ кнопки
+        btn.style.display = "block";
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
-    setTimeout(typeLine, 1000);
+    startHacking();
 </script>
 
 </body>
 </html>
-
