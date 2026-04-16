@@ -1,45 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Terminal Access</title>
+    <title>Terminal Access - Bypass</title>
     <style>
         body {
             background-color: #000;
-            color: #0d0; /* Классический зеленый */
+            color: #0d0;
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
-            overflow: hidden;
+            /* Убрали overflow: hidden, чтобы можно было листать */
+            margin: 0;
         }
 
         #terminal {
             white-space: pre-wrap;
-            line-height: 1.5;
+            line-height: 1.2;
+            font-size: 14px;
         }
 
-        /* Эффект мигающего курсора */
         #cursor {
             display: inline-block;
-            width: 10px;
-            height: 18px;
+            width: 8px;
+            height: 15px;
             background: #0d0;
             animation: blink 0.8s infinite;
+            vertical-align: middle;
         }
 
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        .error { color: #f00; }
-        .success { color: #fff; font-weight: bold; text-shadow: 0 0 5px #fff; }
+        .error { color: #f00; font-weight: bold; }
+        .success { color: #fff; font-weight: bold; text-shadow: 0 0 8px #fff; font-size: 18px; }
+        .header { color: #555; } /* Серый для второстепенных логов */
         
         button {
-            background: none;
-            border: 1px solid #0d0;
+            background: #000;
+            border: 2px solid #0d0;
             color: #0d0;
-            padding: 10px 20px;
+            padding: 15px 30px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
             cursor: pointer;
-            display: none; /* Появится в конце */
-            margin-top: 20px;
+            display: none;
+            margin: 40px auto;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 10px #0d0;
         }
         button:hover { background: #0d0; color: #000; }
     </style>
@@ -48,53 +54,75 @@
 
 <div id="terminal"></div>
 <div id="cursor"></div>
-<button id="actionBtn" onclick="alert('Файл скачан: secret_docs.zip')">ОТКРЫТЬ РАСШИФРОВАННЫЕ ДАННЫЕ</button>
+<center><button id="actionBtn" onclick="window.location.href='ТВОЯ_ССЫЛКА_ТУТ'">ОТКРЫТЬ РАСШИФРОВАННЫЕ ДАННЫЕ</button></center>
 
 <script>
-    const log = [
-        "> Initializing USB interface...",
-        "> Device detected: Generic Flash Drive 64GB",
-        "> Scanning file system: FAT32",
-        "> Warning: Encrypted partition found.",
-        "> Starting cascade bypass [Mode: Aggressive]...",
-        "0x4F22A - Memory Dump Success",
-        "0x1A44C - Brute forcing key...",
-        "..............................",
-        "> ERROR: Firewall detected. Redirecting...",
-        "> Handshake established.",
-        "> ACCESS GRANTED.",
-        "> DECRYPTING: ██████████████ 100%"
-    ];
-
     const terminal = document.getElementById('terminal');
     const btn = document.getElementById('actionBtn');
+    const cursor = document.getElementById('cursor');
+
+    // Базовые фразы
+    const startLogs = [
+        "> BOOTING SYSTEM...",
+        "> LOADING EXPLOIT: CASCADE_v4.2.0",
+        "> CONNECTING TO PORT 8080...",
+        "> REMOTE HOST: [REDACTED]",
+        "> BYPASSING FIREWALL..."
+    ];
+
+    const endLogs = [
+        "",
+        "> [OK] FIREWALL BREACHED",
+        "> [OK] ENCRYPTION KEYS CAPTURED",
+        "> [SYSTEM] ACCESS GRANTED.",
+        "> DECRYPTING FILES: ██████████████ 100%",
+        "> DONE."
+    ];
+
+    // Функция для генерации "мусорных" данных (каскада)
+    function generateTrash() {
+        let trash = [];
+        for(let i = 0; i < 150; i++) { // 150 строк кода
+            let hex = Math.random().toString(16).toUpperCase().substring(2, 10);
+            let mem = "0x" + Math.random().toString(16).toUpperCase().substring(2, 6);
+            trash.push(`${mem} | DATA_STREAM_${hex} | ${Math.random() > 0.5 ? 'SYNC' : 'BUSY'}`);
+        }
+        return trash;
+    }
+
+    const fullLog = [...startLogs, ...generateTrash(), ...endLogs];
     let lineIndex = 0;
 
     function typeLine() {
-        if (lineIndex < log.length) {
+        if (lineIndex < fullLog.length) {
             let p = document.createElement('div');
-            
-            // Раскрашиваем финальную строку
-            if (log[lineIndex].includes("GRANTED")) p.className = "success";
-            if (log[lineIndex].includes("ERROR")) p.className = "error";
+            let currentLine = fullLog[lineIndex];
 
-            p.textContent = log[lineIndex];
+            // Стилизация
+            if (currentLine.includes("GRANTED")) p.className = "success";
+            else if (currentLine.includes("FIREWALL")) p.className = "error";
+            else if (currentLine.includes("|")) p.className = "header";
+
+            p.textContent = currentLine;
             terminal.appendChild(p);
             lineIndex++;
             
-            // Прокрутка вниз
+            // Авто-скролл вниз
             window.scrollTo(0, document.body.scrollHeight);
             
-            // Скорость печати: случайная для реализма
-            setTimeout(typeLine, Math.random() * 500 + 200);
+            // Скорость: "мусор" летит очень быстро, важные строки медленнее
+            let speed = (lineIndex > 5 && lineIndex < 155) ? 10 : 300;
+            setTimeout(typeLine, speed);
         } else {
-            btn.style.display = "block"; // Показываем кнопку в конце
+            btn.style.display = "block";
+            cursor.style.display = "none";
+            window.scrollTo(0, document.body.scrollHeight);
         }
     }
 
-    // Запуск через секунду после загрузки
     setTimeout(typeLine, 1000);
 </script>
 
 </body>
 </html>
+
