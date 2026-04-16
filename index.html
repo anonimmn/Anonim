@@ -1,4 +1,4 @@
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>CRITICAL_ACCESS_REQUIRED</title>
@@ -19,8 +19,8 @@
             text-shadow: 0 0 2px #0d0;
         }
 
-        .success { color: #fff; font-weight: bold; font-size: 20px; text-shadow: 0 0 10px #fff; background: #050; }
-        .warning { color: #ff0; font-style: italic; }
+        .success { color: #fff; font-weight: bold; font-size: 20px; text-shadow: 0 0 10px #fff; }
+        .warning { color: #ff0; }
         .critical { color: #f00; font-weight: bold; animation: pulse 0.5s infinite; }
         
         @keyframes pulse {
@@ -31,24 +31,24 @@
 
         button {
             background: #000;
-            border: 2px solid #fff;
-            color: #fff;
+            border: 2px solid #0d0;
+            color: #0d0;
             padding: 20px 40px;
             font-family: 'Courier New', Courier, monospace;
             font-size: 18px;
             cursor: pointer;
             display: none;
             margin: 50px auto;
-            display: none;
-            box-shadow: 0 0 20px #fff;
+            box-shadow: 0 0 15px #0d0;
+            text-transform: uppercase;
         }
-        button:hover { background: #fff; color: #000; }
+        button:hover { background: #0d0; color: #000; }
     </style>
 </head>
 <body>
 
 <div id="terminal"></div>
-<center><button id="actionBtn" onclick="window.location.href='ТВОЯ_ССЫЛКА_ТУТ'">[ ПОЛУЧИТЬ ДОСТУП К АРХИВУ ]</button></center>
+<center><button id="actionBtn" onclick="alert('СИСТЕМА: Файл успешно расшифрован и сохранен в локальное хранилище.')">[ СКАЧАТЬ ДАННЫЕ ]</button></center>
 
 <script>
     const terminal = document.getElementById('terminal');
@@ -63,35 +63,29 @@
     }
 
     async function startHacking() {
-        // Начало
         addLine("> ИНИЦИАЛИЗАЦИЯ ВЗЛОМА...");
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 800));
         
-        // Огромный каскад (300 строк)
-        for(let i = 0; i < 300; i++) {
-            let hex1 = Math.random().toString(16).toUpperCase().substring(2, 10);
+        // Каскад данных (500 строк для эффекта "ВАУ")
+        for(let i = 0; i < 500; i++) {
+            let hex1 = Math.random().toString(16).toUpperCase().substring(2, 12);
             let hex2 = Math.random().toString(16).toUpperCase().substring(2, 6);
-            let status = Math.random() > 0.9 ? "[КРИТИЧЕСКАЯ ОШИБКА]" : "[OK]";
+            let status = Math.random() > 0.98 ? "[КРИТИЧЕСКАЯ ОШИБКА]" : "[OK]";
             
-            addLine(`СЕКТОР_${hex2} | ПОТОК:${hex1} | СТАТУС: ${status} | MEM_LOAD: ${Math.floor(Math.random()*100)}%`, 
-                    status === "[КРИТИЧЕСКАЯ ОШИБКА]" ? 'warning' : '');
+            addLine(`BLOCK_${hex2} >> ADDR:${hex1} >> STATUS: ${status}`, 
+                    status === "[КРИТИЧЕСКАЯ ОШИБКА]" ? 'critical' : '');
             
-            // Очень высокая скорость для каскада
-            await new Promise(r => setTimeout(r, 15)); 
+            // Очень быстро
+            await new Promise(r => setTimeout(r, 10)); 
         }
 
-        // Финальные команды
-        addLine("\n> ОБХОД ЗАЩИТЫ ЗАВЕРШЕН...", 'success');
-        await new Promise(r => setTimeout(r, 800));
-        addLine("> ИЗВЛЕЧЕНИЕ ПАРОЛЕЙ...", 'warning');
-        await new Promise(r => setTimeout(r, 1200));
-        addLine("> ОШИБКА СИСТЕМЫ: ОБНАРУЖЕН СЛЕД АДМИНИСТРАТОРА!", 'critical');
+        // Финал
+        addLine("\n> СТРУКТУРА ДАННЫХ ВОССТАНОВЛЕНА.", 'success');
+        await new Promise(r => setTimeout(r, 600));
+        addLine("> ПОДГОТОВКА К ЗАГРУЗКЕ...", 'warning');
         await new Promise(r => setTimeout(r, 1000));
-        addLine("> ПЕРЕНАПРАВЛЕНИЕ ТРАФИКА... УСПЕШНО.");
-        await new Promise(r => setTimeout(r, 500));
-        addLine("\n=== ДОСТУП РАЗРЕШЕН ===", 'success');
+        addLine("\n=== ДОСТУП ОТКРЫТ ===", 'success');
         
-        // Показ кнопки
         btn.style.display = "block";
         window.scrollTo(0, document.body.scrollHeight);
     }
@@ -101,3 +95,4 @@
 
 </body>
 </html>
+
